@@ -1,0 +1,6 @@
+@tesla_rental_HostAddress = http://localhost:5226
+
+GET {{tesla_rental_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
