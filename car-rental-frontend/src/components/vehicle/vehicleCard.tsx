@@ -1,11 +1,37 @@
-import { formatPrice } from "@/app/utils";
+import {
+  CookieName,
+  formatPrice,
+  getTotalPriceBetweenDates,
+} from "@/app/utils";
 import Image from "next/image";
 import { Location, Seat } from "@/components/icons";
-import Link from "next/link";
-import { pages } from "@/app/pages";
+import { cookies } from "next/headers";
+import { Car } from "@/app/types";
+import RentModal from "../rent/rentModal";
 
-//TODO:: fix type when be will be ready
-export default function VehicleCard({ vehicle }: { vehicle: any }) {
+export default function VehicleCard({ vehicle }: { vehicle: Car }) {
+  const cookiesStore = cookies();
+
+  const startDateCookie = cookiesStore.get(
+    CookieName.START_DATE_COOKIE_NAME
+  )?.value;
+  const endDateCookie = cookiesStore.get(
+    CookieName.END_DATE_COOKIE_NAME
+  )?.value;
+
+  const pickupLocation = cookiesStore.get(
+    CookieName.PICKUP_LOCATION_COOKIE_NAME
+  )?.value;
+  const returnLocation = cookiesStore.get(
+    CookieName.RETURN_LOCATION_COOKIE_NAME
+  )?.value;
+
+  const totalPrice = getTotalPriceBetweenDates(
+    vehicle.pricePerDay,
+    new Date(startDateCookie ?? new Date().toLocaleDateString()),
+    new Date(endDateCookie ?? new Date().toLocaleDateString())
+  );
+
   return (
     <>
       <div className="w-full shadow-lg border-gray-200 text-font-dark rounded-lg flex flex-col justify-between items-center relative">
@@ -17,7 +43,7 @@ export default function VehicleCard({ vehicle }: { vehicle: any }) {
           alt="tesla-model-image"
           width={400}
           height={400}
-          className="aspect-square rounded-md h-1/2 w-full rounded-b-none"
+          className="aspect-square rounded-md h-1/2 w-full rounded-b-none p-12"
           sizes="(min-width: 1300px) 640w, (min-width: 680px) 384w, 128w)"
         />
         <div className="w-full flex flex-col gap-1 px-2">
@@ -28,21 +54,23 @@ export default function VehicleCard({ vehicle }: { vehicle: any }) {
           </h1>
           <div className="flex flex-col gap-3">
             <div className="w-full flex gap-2 items-center">
-              <Location />
-              <p>Location, Mallorca</p>
-            </div>
-            <div className="w-full flex gap-2 items-center">
               <Seat />
               <p>{vehicle.seatingCapacity} seats</p>
             </div>
           </div>
         </div>
-        <div className="flex justify-end items-center w-full p-2">
-          <Link href={pages.rent(1)}>
-            <button className="w-auto px-5 py-2 rounded-lg bg-blue-500 text-white">
-              Rent
-            </button>
-          </Link>
+        <div className="flex justify-between items-center w-full p-2">
+          <h1 className="font-bold">Total: {formatPrice(totalPrice)}</h1>
+          <RentModal
+            carId={vehicle.id}
+            imageSrc={vehicle.imageSrc}
+            model={vehicle.model}
+            totalPrice={totalPrice}
+            startDate={new Date(startDateCookie!)}
+            endDate={new Date(endDateCookie!)}
+            pickupLocation={pickupLocation ?? ""}
+            returnLocation={returnLocation ?? ""}
+          />
         </div>
       </div>
     </>

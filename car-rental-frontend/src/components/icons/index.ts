@@ -1,5 +1,5 @@
-import { Coins } from "./coinsIcon";
 import { Seat } from "./seatIcon";
 import { Location } from "./locationIcon";
+import { Calendar } from "./calendarIcon";
 
-export { Coins, Seat, Location };
+export { Seat, Location, Calendar };
