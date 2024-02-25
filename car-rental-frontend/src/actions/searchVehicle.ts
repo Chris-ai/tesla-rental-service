@@ -1,6 +1,7 @@
 "use server";
 
 import { pages } from "@/app/pages";
+import { CookieName } from "@/app/utils";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -13,19 +14,20 @@ export async function searchVehicle(
   formData: FormData
 ): Promise<SearchVehicleState> {
   const cookiesStore = cookies();
-
-  const location = formData.get("location") as string;
+  const pickuplocation = formData.get("pickuplocation") as string;
+  const returnLocation = formData.get("returnLocation") as string;
   const startDate = formData.get("startDate") as string;
   const endDate = formData.get("endDate") as string;
 
   if (endDate < startDate) {
     return {
-      error: "Data oddania nie może byc wcześniejsza niż data odebrania",
+      error: "Return date cannot be earlier than pickup date",
     };
   } else {
-    cookiesStore.set("location", location);
-    cookiesStore.set("startDate", startDate);
-    cookiesStore.set("endDate", endDate);
+    cookiesStore.set(CookieName.PICKUP_LOCATION_COOKIE_NAME, pickuplocation);
+    cookiesStore.set(CookieName.RETURN_LOCATION_COOKIE_NAME, returnLocation);
+    cookiesStore.set(CookieName.START_DATE_COOKIE_NAME, startDate);
+    cookiesStore.set(CookieName.END_DATE_COOKIE_NAME, endDate);
     revalidatePath(pages.home);
     return {};
   }
