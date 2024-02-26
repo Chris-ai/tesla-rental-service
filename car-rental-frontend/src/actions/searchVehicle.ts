@@ -9,25 +9,35 @@ interface SearchVehicleState {
   error?: string;
 }
 
+const setCookie = (cookieName: CookieName, value: string) => {
+  const oneDay = 24 * 60 * 60 * 1;
+  const cookiesStore = cookies();
+  cookiesStore.set(cookieName, value, {
+    maxAge: oneDay,
+  });
+};
+
 export async function searchVehicle(
   formState: SearchVehicleState,
   formData: FormData
 ): Promise<SearchVehicleState> {
-  const cookiesStore = cookies();
   const pickuplocation = formData.get("pickuplocation") as string;
   const returnLocation = formData.get("returnLocation") as string;
-  const startDate = formData.get("startDate") as string;
-  const endDate = formData.get("endDate") as string;
+  const startDateFormData = formData.get("startDate") as string;
+  const endDateFormData = formData.get("endDate") as string;
+
+  const startDate = new Date(startDateFormData);
+  const endDate = new Date(endDateFormData);
 
   if (endDate < startDate) {
     return {
       error: "Return date cannot be earlier than pickup date",
     };
   } else {
-    cookiesStore.set(CookieName.PICKUP_LOCATION_COOKIE_NAME, pickuplocation);
-    cookiesStore.set(CookieName.RETURN_LOCATION_COOKIE_NAME, returnLocation);
-    cookiesStore.set(CookieName.START_DATE_COOKIE_NAME, startDate);
-    cookiesStore.set(CookieName.END_DATE_COOKIE_NAME, endDate);
+    setCookie(CookieName.PICKUP_LOCATION_COOKIE_NAME, pickuplocation);
+    setCookie(CookieName.RETURN_LOCATION_COOKIE_NAME, returnLocation);
+    setCookie(CookieName.START_DATE_COOKIE_NAME, startDateFormData);
+    setCookie(CookieName.END_DATE_COOKIE_NAME, endDateFormData);
     revalidatePath(pages.home);
     return {};
   }

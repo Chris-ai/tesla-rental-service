@@ -1,7 +1,7 @@
 import FilterSection from "@/components/filter/filterSection";
 import SectionContainer from "@/components/sectionContainer";
 import VehicleList from "@/components/vehicle/vehicleList";
-import { getCars } from "@/services/carService";
+import { getOffers } from "@/services";
 import { cookies } from "next/headers";
 import { CookieName } from "./utils";
 
@@ -31,20 +31,20 @@ export const getParamsFromCookies = () => {
 export default async function Home() {
   const { pickupLocation, returnLocation, startDate, endDate } =
     getParamsFromCookies();
-
-  const cars = await getCars(
+  const off = await getOffers(
     pickupLocation,
     returnLocation,
     startDate,
     endDate
   );
+
   return (
     <main className="flex flex-col gap-12 items-center">
       <SectionContainer>
         <FilterSection />
       </SectionContainer>
       <SectionContainer>
-        <VehicleList vehicles={cars} />
+        <VehicleList offers={off} />
       </SectionContainer>
     </main>
   );

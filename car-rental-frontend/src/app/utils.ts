@@ -20,3 +20,5 @@ export const getTotalPriceBetweenDates = (
 
   return Math.round(differenceInTime / (1000 * 3600 * 24)) * pricePerDay;
 };
+
+export const displayDate = (date: Date) => new Date(date).toLocaleDateString();

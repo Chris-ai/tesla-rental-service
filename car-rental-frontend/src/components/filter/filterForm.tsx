@@ -1,10 +1,11 @@
 "use client";
 
 import { searchVehicle } from "@/actions/searchVehicle";
-import { Button, Datepicker, Select } from "flowbite-react";
+import { Datepicker, Select } from "flowbite-react";
 import { useFormState } from "react-dom";
 import InputWithLabel from "../inputWithLabel";
 import { useMemo } from "react";
+import FilterButton from "./filterButton";
 export default function FilterForm() {
   const [formState, action] = useFormState(searchVehicle, {
     error: "",
@@ -58,7 +59,7 @@ export default function FilterForm() {
           input={<Datepicker name="endDate" id="endDate" minDate={startDate} />}
           label="Return Date"
         />
-        <Button type="submit">Search</Button>
+        <FilterButton />
       </form>
       {formState.error && (
         <p className="text-red-700 italic text-sm">{formState.error}</p>
