@@ -18,36 +18,14 @@ Database schema:
   - Database=[db_name];
   - Username=[your_username];
   - Password=[your_password];
-- Create two tables with following columns:
-
-  - cars
-
-    - id (int4)
-    - model (text)
-    - imagesrc (text)
-    - priceperday (int4)
-    - bodystyle (text)
-
-  - reservations
-    - id (int4)
-    - startdate (date)
-    - enddate (date)
-    - pickuplocation (text)
-    - returnlocation (text)
-    - totalprice (text)
-    - carid (int4) [(foreign key to the car table)]
-
-- Populate the cars table with data from the `cars.json` file
 
 ## 2. Running the Backend
 
 - Open the `car-rental-backend` directory using your IDE.
-- In the `appsettings.Development.json` file, under "Logging", add the following connection string:
+- In the `ApplicationDbContext.cs` file, update the connection string:
 
 ```
-"ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=[db_name];Username=[your_username];Password=[your_password];"
-  }
+"Host=localhost;Port=5432;Database=[db_name];Username=[your_username];Password=[your_password];"
 
 ```
 
