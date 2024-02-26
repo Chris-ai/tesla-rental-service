@@ -22,7 +22,7 @@ namespace car_rental_backend.Controllers
         {
             try
             {
-                bool isOverlap = await _context.reservations.AnyAsync(r =>
+                bool isOverlap = await _context.Reservations.AnyAsync(r =>
                     r.CarId == reservation.CarId &&
                     ((reservation.StartDate == r.StartDate && reservation.EndDate == r.EndDate)));
 
@@ -46,7 +46,7 @@ namespace car_rental_backend.Controllers
                     TotalPrice = reservation.TotalPrice
                 };
 
-                _context.reservations.Add(res);
+                _context.Reservations.Add(res);
                 await _context.SaveChangesAsync();
 
                 return new CustomResponse<Reservation>

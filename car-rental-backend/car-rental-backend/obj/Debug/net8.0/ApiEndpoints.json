@@ -19,12 +19,12 @@
       },
       {
         "Name": "StartDate",
-        "Type": "System.DateTime",
+        "Type": "System.DateOnly",
         "IsRequired": false
       },
       {
         "Name": "EndDate",
-        "Type": "System.DateTime",
+        "Type": "System.DateOnly",
         "IsRequired": false
       }
     ],

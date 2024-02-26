@@ -31,22 +31,22 @@ namespace car_rental_backend.Controllers
 
         private bool IsValidRequest(ListRequestDto requestDto)
         {
-            return requestDto.StartDate != DateTime.MinValue &&
-                   requestDto.EndDate != DateTime.MinValue &&
+            return requestDto.StartDate != DateOnly.MinValue &&
+                   requestDto.EndDate != DateOnly.MinValue &&
                    !string.IsNullOrEmpty(requestDto.ReturnLocation) &&
                    !string.IsNullOrEmpty(requestDto.PickUpLocation);
         }
 
         private Task<List<CarResponseDto>> GetAvailableCars(ListRequestDto requestDto)
         {
-            var allCars = _context.cars.ToList();
+            var allCars = _context.Cars.ToList();
             var availableCars = new List<CarResponseDto>();
 
             foreach (var car in allCars)
             {
                 if (!IsCarReserved(car.Id, requestDto))
                 {
-                    int numberOfDays = (int)(requestDto.EndDate - requestDto.StartDate).TotalDays + 1;
+                    int numberOfDays = (int)(requestDto.EndDate.DayNumber - requestDto.StartDate.DayNumber) + 1;
                     int totalPrice = numberOfDays * car.PricePerDay;
 
                     availableCars.Add(new CarResponseDto
@@ -66,7 +66,7 @@ namespace car_rental_backend.Controllers
 
         private bool IsCarReserved(int carId, ListRequestDto requestDto)
         {
-            return _context.reservations.Any(r =>
+            return _context.Reservations.Any(r =>
                 r.CarId == carId &&
                 ((requestDto.StartDate >= r.StartDate && requestDto.StartDate < r.EndDate) ||
                  (requestDto.EndDate > r.StartDate && requestDto.EndDate <= r.EndDate)));
