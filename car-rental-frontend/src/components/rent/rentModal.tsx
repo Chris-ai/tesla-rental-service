@@ -86,12 +86,7 @@ export default function RentModal({
 
   return (
     <>
-      <button
-        onClick={changeModalState}
-        className="w-auto px-5 py-2 rounded-lg bg-blue-800 text-white"
-      >
-        Rent
-      </button>
+      <Button onClick={changeModalState}>Rent</Button>
       <Modal
         show={openModal}
         onClose={onClose}
