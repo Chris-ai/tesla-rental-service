@@ -9,9 +9,8 @@ export const getOffers = async (
   const urlParams = new URLSearchParams();
   if (pickupLocation) urlParams.append("PickUpLocation", pickupLocation);
   if (returnLocation) urlParams.append("ReturnLocation", returnLocation);
-  if (startDate)
-    urlParams.append("StartDate", new Date(startDate).toISOString());
-  if (endDate) urlParams.append("EndDate", new Date(endDate).toISOString());
+  if (startDate) urlParams.append("StartDate", startDate);
+  if (endDate) urlParams.append("EndDate", endDate);
   try {
     const response = await fetch(
       `${process.env.BACKEND_API_URL}/Cars?${urlParams}`,
