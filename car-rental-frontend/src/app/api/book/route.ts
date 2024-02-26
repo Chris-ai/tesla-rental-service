@@ -1,8 +1,7 @@
+import { pages } from "@/app/pages";
+import { CustomResponse, ReservationDto } from "@/app/types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
-
-const BACKEND_API_URL = "http://localhost:5022/api/";
 
 export async function POST(req: NextRequest) {
   if (req.method !== "POST") return new NextResponse(null, { status: 403 });
@@ -10,10 +9,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    console.log("body", body);
-    console.log("body", JSON.stringify(body));
-
-    const res = await fetch(`${BACKEND_API_URL}Reservations`, {
+    const res = await fetch(`${process.env.BACKEND_API_URL}/Reservations`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,15 +17,25 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body.reservation),
     });
 
-    console.log("res", res);
+    const response: CustomResponse<ReservationDto> = await res.json();
 
-    revalidatePath("/");
-    return NextResponse.json({ succeded: true });
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      console.error(e.message);
+    if (response.succeeded) {
+      revalidatePath(pages.home);
+      return NextResponse.json({
+        succeded: response.succeeded,
+        message: response.message,
+      });
+    } else {
+      return NextResponse.json({
+        succeded: response.succeeded,
+        message: response.message,
+      });
     }
-    console.error(e);
-    return NextResponse.json({ succeded: false });
+  } catch (e: unknown) {
+    let message = "Unexpected Error";
+    if (e instanceof Error) {
+      message = e.message;
+    }
+    return NextResponse.json({ succeded: false, message: message });
   }
 }
