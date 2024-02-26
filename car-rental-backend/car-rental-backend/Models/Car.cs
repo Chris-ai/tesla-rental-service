@@ -11,13 +11,9 @@ namespace car_rental_backend.Models
         public string Model { get; set; }
         [Column("imagesrc")]
         public string ImageSrc { get; set; }
-        [Column("seatingcapacity")]
-        public int SeatingCapacity { get; set; }
         [Column("priceperday")]
         public int PricePerDay { get; set; } 
         [Column("bodystyle")]
         public string BodyStyle { get; set; }
-        [Column("range")]
-        public int Range { get; set; }
     }
 }

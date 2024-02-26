@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using car_rental_backend.Models;
 using car_rental_backend.Dto;
 
@@ -23,88 +17,60 @@ namespace car_rental_backend.Controllers
 
         // GET: api/Cars
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> Getcars([FromQuery] ListRequestDto listRequestDto)
+        public async Task<ActionResult<List<CarResponseDto>>> GetCars([FromQuery] ListRequestDto listRequestDto)
         {
-            //return await _context.cars.ToListAsync();
-            return await _context.cars.ToListAsync();
+            if (!IsValidRequest(listRequestDto))
+            {
+                return BadRequest("Invalid request parameters.");
+            }
 
+            var availableCars = await GetAvailableCars(listRequestDto);
+
+            return Ok(availableCars);
         }
 
-        // GET: api/Cars/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
+        private bool IsValidRequest(ListRequestDto requestDto)
         {
-            var car = await _context.cars.FindAsync(id);
-
-            if (car == null)
-            {
-                return NotFound();
-            }
-
-            return car;
+            return requestDto.StartDate != DateTime.MinValue &&
+                   requestDto.EndDate != DateTime.MinValue &&
+                   !string.IsNullOrEmpty(requestDto.ReturnLocation) &&
+                   !string.IsNullOrEmpty(requestDto.PickUpLocation);
         }
 
-        // PUT: api/Cars/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCar(int id, Car car)
+        private Task<List<CarResponseDto>> GetAvailableCars(ListRequestDto requestDto)
         {
-            if (id != car.Id)
-            {
-                return BadRequest();
-            }
+            var allCars = _context.cars.ToList();
+            var availableCars = new List<CarResponseDto>();
 
-            _context.Entry(car).State = EntityState.Modified;
+            foreach (var car in allCars)
+            {
+                if (!IsCarReserved(car.Id, requestDto))
+                {
+                    int numberOfDays = (int)(requestDto.EndDate - requestDto.StartDate).TotalDays + 1;
+                    int totalPrice = numberOfDays * car.PricePerDay;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CarExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    availableCars.Add(new CarResponseDto
+                    {
+                        StartDate = requestDto.StartDate,
+                        EndDate = requestDto.EndDate,
+                        PickupLocation = requestDto.PickUpLocation,
+                        ReturnLocation = requestDto.ReturnLocation,
+                        TotalPrice = totalPrice,
+                        Car = car
+                    });
                 }
             }
 
-            return NoContent();
+            return Task.FromResult(availableCars);
         }
 
-        // POST: api/Cars
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Car>> PostCar(Car car)
+        private bool IsCarReserved(int carId, ListRequestDto requestDto)
         {
-            _context.cars.Add(car);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCar", new { id = car.Id }, car);
-        }
-
-        // DELETE: api/Cars/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCar(int id)
-        {
-            var car = await _context.cars.FindAsync(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-
-            _context.cars.Remove(car);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool CarExists(int id)
-        {
-            return _context.cars.Any(e => e.Id == id);
+            return _context.reservations.Any(r =>
+                r.CarId == carId &&
+                ((requestDto.StartDate >= r.StartDate && requestDto.StartDate < r.EndDate) ||
+                 (requestDto.EndDate > r.StartDate && requestDto.EndDate <= r.EndDate)));
         }
     }
+
 }
