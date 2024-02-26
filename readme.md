@@ -1,10 +1,10 @@
 # Getting Started
 
-A fullstack application used to make reservations for Tesla car rentals, in Mallorca. The application has two modules, frontend and backend, and connects to an external PostgreSQL database. The backend site was implemented using .NET and the Entity Framework. The frontend, on the other hand, was built using Next.js, a React.js framework. The user has the ability to:
+This full-stack application facilitates reservations for Tesla car rentals in Mallorca. The system comprises two modules: frontend and backend, both connecting to an external PostgreSQL database. The backend is developed using .NET with the Entity Framework, while the frontend is built using Next.js, a React.js framework. Users can:
 
-- Select the parameters of the searched car
-- choose from a variety of models for selected parameters
-- book the selected model
+- Select parameters for the desired car
+- Choose from various models based on selected parameters
+- Book the selected model
 
 Database schema:
 <img src="./er_diagram.png" alt='schema-of-two-tables-database' />
@@ -15,9 +15,9 @@ Database schema:
 - Create database with following credentials:
   - Host=localhost;
   - Port=5432;
-  - Database=car-rental;
-  - Username=postgres;
-  - Password=postgres;
+  - Database=[db_name];
+  - Username=[your_username];
+  - Password=[your_password];
 - Create two tables with following columns:
 
   - cars
@@ -37,17 +37,26 @@ Database schema:
     - totalprice (text)
     - carid (int4) [(foreign key to the car table)]
 
-- Fill cars table with the data from file `cars.json`
+- Populate the cars table with data from the `cars.json` file
 
-## 2. Run Backend Side
+## 2. Running the Backend
 
-- Open `car-rental-backend` directory using your IDE
+- Open the `car-rental-backend` directory using your IDE.
+- In the `appsettings.Development.json` file, under "Logging", add the following connection string:
+
+```
+"ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=[db_name];Username=[your_username];Password=[your_password];"
+  }
+
+```
+
 - Run backend server
 
-## 3. Run Frontend Side
+## 3. Running the Frontend
 
-- Add .env file in the `car-rental-frontend` directory and add env variable: `BACKEND_API_URL = "http://localhost:5022/api"`
-- In terminal run following commands:
+- Add a `.env` file in the car-rental-frontend directory and define the environment variable: `BACKEND_API_URL = "http://localhost:5022/api"`.
+- In the terminal, run the following commands:
 
   - `npm install`
 
